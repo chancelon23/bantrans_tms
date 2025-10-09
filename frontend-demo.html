@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanTrans - Book Your Trip</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold">🚐 BanTrans Transport System</h1>
+            <p class="text-blue-100 mt-1">Book your trip easily and safely</p>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="flex flex-wrap border-b">
+                <button onclick="showTab('book')" id="tab-book" class="tab-btn px-6 py-3 font-semibold border-b-2 border-blue-600 text-blue-600">
+                    Book a Trip
+                </button>
+                <button onclick="showTab('search')" id="tab-search" class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-blue-600">
+                    Search Booking
+                </button>
+                <button onclick="showTab('track')" id="tab-track" class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-blue-600">
+                    Track Booking
+                </button>
+            </div>
+        </div>
+
+        <!-- Book Trip Tab -->
+        <div id="content-book" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">📅 Book Your Trip</h2>
+                
+                <!-- Step 1: Select Route -->
+                <div id="step1" class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Step 1: Select Destination</h3>
+                    <div id="routesList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Routes will be loaded here -->
+                        <div class="text-center py-8 text-gray-500">Loading routes...</div>
+                    </div>
+                </div>
+
+                <!-- Step 2: View Available Trips -->
+                <div id="step2" class="hidden space-y-4 fade-in">
+                    <button onclick="backToStep1()" class="text-blue-600 hover:text-blue-800 mb-4">
+                        ← Back to routes
+                    </button>
+                    <h3 class="text-lg font-semibold text-gray-700">Step 2: Select Trip</h3>
+                    <div id="tripsList" class="space-y-3">
+                        <!-- Trips will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Step 3: Passenger Details -->
+                <div id="step3" class="hidden space-y-4 fade-in">
+                    <button onclick="backToStep2()" class="text-blue-600 hover:text-blue-800 mb-4">
+                        ← Back to trips
+                    </button>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">Step 3: Passenger Information</h3>
+                    
+                    <form id="bookingForm" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                                <input type="text" id="firstname" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                                <input type="text" id="lastname" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                            <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                            <input type="tel" id="phone" required placeholder="09171234567" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                            <textarea id="address" required rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Number of Seats *</label>
+                            <input type="number" id="seat_count" min="1" max="10" value="1" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method *</label>
+                            <select id="payment_method" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Select payment method</option>
+                                <option value="gcash">GCash</option>
+                                <option value="paymaya">PayMaya</option>
+                                <option value="cash">Cash</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Payment Reference Number *</label>
+                            <input type="text" id="payment_reference" required placeholder="e.g., GCASH-2025-001" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" id="bookingSummary">
+                            <!-- Booking summary will be displayed here -->
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+                            🎫 Confirm Booking
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Step 4: Booking Confirmation -->
+                <div id="step4" class="hidden space-y-4 fade-in">
+                    <div class="text-center py-8">
+                        <div class="text-6xl mb-4">✅</div>
+                        <h3 class="text-2xl font-bold text-green-600 mb-2">Booking Confirmed!</h3>
+                        <p class="text-gray-600 mb-6">Your booking has been successfully created.</p>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-md mx-auto text-left" id="confirmationDetails">
+                            <!-- Confirmation details will be shown here -->
+                        </div>
+
+                        <button onclick="resetBooking()" class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
+                            Book Another Trip
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Booking Tab -->
+        <div id="content-search" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">🔍 Search Your Booking</h2>
+                
+                <div class="max-w-md mx-auto space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="searchEmail" placeholder="Enter your email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button onclick="searchBookings()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">
+                        Search Bookings
+                    </button>
+                </div>
+
+                <div id="searchResults" class="mt-6 space-y-4">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Track Booking Tab -->
+        <div id="content-track" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">🎫 Track Your Booking</h2>
+                
+                <div class="max-w-md mx-auto space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ticket Reference Number</label>
+                        <input type="text" id="trackingNumber" placeholder="Enter your ticket reference (e.g., BT-2025-0001)" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">You can find this in your booking confirmation email or SMS</p>
+                    </div>
+                    <button onclick="trackBooking()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">
+                        🔍 Track Booking
+                    </button>
+                </div>
+
+                <div id="trackingResults" class="mt-8">
+                    <!-- Tracking results will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_URL = 'http://localhost:5001/api';
+        
+        // State
+        let selectedRoute = null;
+        let selectedTrip = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRoutes();
+        });
+
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-blue-600', 'text-blue-600');
+                btn.classList.add('text-gray-600');
+            });
+            
+            // Show selected tab
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).classList.add('border-blue-600', 'text-blue-600');
+            document.getElementById('tab-' + tabName).classList.remove('text-gray-600');
+        }
+
+        // Load Routes
+        async function loadRoutes() {
+            try {
+                const response = await fetch(`${API_URL}/passenger/routes`);
+                const data = await response.json();
+                
+                const routesList = document.getElementById('routesList');
+                
+                if (data.success && data.data.length > 0) {
+                    routesList.innerHTML = data.data.map(route => `
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition cursor-pointer" onclick="selectRoute(${route.route_id})">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">${route.origin} → ${route.destination}</h4>
+                                    <p class="text-sm text-gray-600">${route.distance_km} km • ${route.estimated_duration_minutes} mins</p>
+                                </div>
+                                <span class="bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">₱${route.fare_price}</span>
+                            </div>
+                            <button class="mt-2 w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-blue-700">
+                                View Trips →
+                            </button>
+                        </div>
+                    `).join('');
+                } else {
+                    routesList.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-500">No routes available</div>';
+                }
+            } catch (error) {
+                console.error('Error loading routes:', error);
+                document.getElementById('routesList').innerHTML = '<div class="col-span-2 text-center py-8 text-red-500">Error loading routes. Make sure the server is running.</div>';
+            }
+        }
+
+        // Select Route and Load Trips
+        async function selectRoute(routeId) {
+            selectedRoute = routeId;
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            
+            try {
+                const response = await fetch(`${API_URL}/passenger/trips/route/${routeId}`);
+                const data = await response.json();
+                
+                const tripsList = document.getElementById('tripsList');
+                
+                if (data.success && data.data.length > 0) {
+                    tripsList.innerHTML = data.data.map(trip => `
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">Queue #${trip.queue_position}</span>
+                                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">${trip.trip_status}</span>
+                                    </div>
+                                    <p class="text-gray-800 font-semibold">${trip.origin} → ${trip.destination}</p>
+                                    <p class="text-sm text-gray-600">🚐 ${trip.vehicle_type} • ${trip.plate_number}</p>
+                                    <p class="text-sm text-gray-600">👨‍✈️ ${trip.driver_name}</p>
+                                    <p class="text-sm text-gray-600">🕐 Departure: ${new Date(trip.estimated_departure_time).toLocaleString()}</p>
+                                    <p class="text-sm font-semibold ${trip.seats_available > 5 ? 'text-green-600' : 'text-orange-600'}">
+                                        💺 ${trip.seats_available} / ${trip.capacity} seats available
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-blue-600">₱${trip.fare_price}</p>
+                                    <button onclick="selectTrip(${JSON.stringify(trip).replace(/"/g, '&quot;')})" 
+                                            class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700"
+                                            ${trip.seats_available === 0 ? 'disabled' : ''}>
+                                        ${trip.seats_available === 0 ? 'Full' : 'Select →'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    tripsList.innerHTML = '<div class="text-center py-8 text-gray-500">No available trips for this route</div>';
+                }
+            } catch (error) {
+                console.error('Error loading trips:', error);
+                document.getElementById('tripsList').innerHTML = '<div class="text-center py-8 text-red-500">Error loading trips</div>';
+            }
+        }
+
+        // Select Trip
+        function selectTrip(trip) {
+            selectedTrip = trip;
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+            
+            // Update booking summary
+            const summary = `
+                <h4 class="font-semibold text-gray-800 mb-2">Booking Summary</h4>
+                <div class="space-y-1 text-sm">
+                    <p><strong>Route:</strong> ${trip.origin} → ${trip.destination}</p>
+                    <p><strong>Vehicle:</strong> ${trip.vehicle_type} (${trip.plate_number})</p>
+                    <p><strong>Driver:</strong> ${trip.driver_name}</p>
+                    <p><strong>Departure:</strong> ${new Date(trip.estimated_departure_time).toLocaleString()}</p>
+                    <p><strong>Fare per seat:</strong> ₱${trip.fare_price}</p>
+                </div>
+            `;
+            document.getElementById('bookingSummary').innerHTML = summary;
+        }
+
+        // Handle Booking Form
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                route_id: selectedRoute,
+                firstname: document.getElementById('firstname').value,
+                lastname: document.getElementById('lastname').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                seat_count: parseInt(document.getElementById('seat_count').value),
+                payment_method: document.getElementById('payment_method').value,
+                payment_reference: document.getElementById('payment_reference').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/passenger/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Generate ticket reference number
+                    const ticketRef = `BT-2025-${String(data.data.booking_id).padStart(4, '0')}`;
+                    
+                    // Show confirmation
+                    document.getElementById('step3').classList.add('hidden');
+                    document.getElementById('step4').classList.remove('hidden');
+                    
+                    const confirmationHTML = `
+                        <div class="text-center mb-4 p-4 bg-blue-50 border-2 border-blue-300 rounded-lg">
+                            <p class="text-xs text-gray-600 mb-1">Ticket Reference Number</p>
+                            <p class="text-3xl font-bold text-blue-600 tracking-wider">${ticketRef}</p>
+                            <p class="text-xs text-gray-500 mt-1">Save this number to track your booking</p>
+                        </div>
+                        <div class="space-y-2 text-sm text-left">
+                            <p><strong>Booking ID:</strong> #${data.data.booking_id}</p>
+                            <p><strong>Trip ID:</strong> #${data.data.trip_id}</p>
+                            <p><strong>Total Amount:</strong> ₱${data.data.total_amount}</p>
+                            <p><strong>Passenger:</strong> ${formData.firstname} ${formData.lastname}</p>
+                            <p><strong>Email:</strong> ${formData.email}</p>
+                            <p><strong>Seats:</strong> ${formData.seat_count}</p>
+                        </div>
+                        <div class="mt-4 p-3 bg-green-50 border border-green-200 rounded">
+                            <p class="text-green-800 text-xs">✉️ A confirmation email with your ticket reference <strong>${ticketRef}</strong> has been sent to your email address.</p>
+                        </div>
+                    `;
+                    document.getElementById('confirmationDetails').innerHTML = confirmationHTML;
+                } else {
+                    alert('Booking failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error creating booking:', error);
+                alert('Error creating booking. Please try again.');
+            }
+        });
+
+        // Search Bookings
+        async function searchBookings() {
+            const email = document.getElementById('searchEmail').value;
+            
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/passenger/bookings/search/email/${email}`);
+                const data = await response.json();
+                
+                const resultsDiv = document.getElementById('searchResults');
+                
+                if (data.success && data.data.length > 0) {
+                    resultsDiv.innerHTML = '<h3 class="font-semibold text-gray-800 mb-4">Your Bookings:</h3>' + 
+                        data.data.map(booking => `
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Booking #${booking.booking_id}</p>
+                                        <p class="text-sm text-gray-600">${booking.origin} → ${booking.destination}</p>
+                                    </div>
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${
+                                        booking.payment_status === 'paid' ? 'bg-green-100 text-green-800' : 
+                                        booking.payment_status === 'cancelled' ? 'bg-red-100 text-red-800' : 
+                                        'bg-yellow-100 text-yellow-800'
+                                    }">${booking.payment_status}</span>
+                                </div>
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <p>👤 ${booking.passenger_name}</p>
+                                    <p>💺 ${booking.seat_count} seat(s)</p>
+                                    <p>💰 ₱${booking.total_amount}</p>
+                                    <p>🚐 ${booking.plate_number}</p>
+                                    <p>🕐 ${new Date(booking.estimated_departure_time).toLocaleString()}</p>
+                                    <p>Status: <strong>${booking.trip_status}</strong></p>
+                                </div>
+                                ${booking.payment_status === 'paid' ? `
+                                    <button onclick="cancelBooking(${booking.booking_id})" class="mt-3 w-full bg-red-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-700">
+                                        Cancel Booking
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `).join('');
+                } else {
+                    resultsDiv.innerHTML = '<div class="text-center py-8 text-gray-500">No bookings found for this email</div>';
+                }
+            } catch (error) {
+                console.error('Error searching bookings:', error);
+                document.getElementById('searchResults').innerHTML = '<div class="text-center py-8 text-red-500">Error searching bookings</div>';
+            }
+        }
+
+        // Cancel Booking
+        async function cancelBooking(bookingId) {
+            if (!confirm('Are you sure you want to cancel this booking?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/passenger/bookings/${bookingId}/cancel`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Booking cancelled successfully');
+                    searchBookings(); // Refresh the list
+                } else {
+                    alert('Error cancelling booking: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error cancelling booking:', error);
+                alert('Error cancelling booking');
+            }
+        }
+
+        // Load All Trips
+        async function loadAllTrips() {
+            try {
+                const response = await fetch(`${API_URL}/passenger/trips/available`);
+                const data = await response.json();
+                
+                const tripsList = document.getElementById('allTripsList');
+                
+                if (data.success && data.data.length > 0) {
+                    tripsList.innerHTML = data.data.map(trip => `
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">Queue #${trip.queue_position}</span>
+                                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">${trip.trip_status}</span>
+                                    </div>
+                                    <p class="text-lg font-semibold text-gray-800">${trip.origin} → ${trip.destination}</p>
+                                    <div class="mt-2 space-y-1 text-sm text-gray-600">
+                                        <p>🚐 ${trip.vehicle_type} • ${trip.plate_number}</p>
+                                        <p>👨‍✈️ Driver: ${trip.driver_name}</p>
+                                        <p>🕐 Departure: ${new Date(trip.estimated_departure_time).toLocaleString()}</p>
+                                        <p class="font-semibold ${trip.seats_available > 5 ? 'text-green-600' : 'text-orange-600'}">
+                                            💺 ${trip.seats_available} / ${trip.capacity} seats available
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-blue-600">₱${trip.fare_price}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    tripsList.innerHTML = '<div class="text-center py-8 text-gray-500">No available trips at the moment</div>';
+                }
+            } catch (error) {
+                console.error('Error loading trips:', error);
+                document.getElementById('allTripsList').innerHTML = '<div class="text-center py-8 text-red-500">Error loading trips</div>';
+            }
+        }
+
+        // Track Booking by Reference Number
+        async function trackBooking() {
+            const trackingNumber = document.getElementById('trackingNumber').value.trim();
+            
+            if (!trackingNumber) {
+                alert('Please enter a ticket reference number');
+                return;
+            }
+
+            // Extract booking ID from reference number (BT-2025-0001 -> 1)
+            const match = trackingNumber.match(/BT-\d{4}-(\d+)/);
+            if (!match) {
+                document.getElementById('trackingResults').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                        <p class="text-red-800">❌ Invalid ticket reference format</p>
+                        <p class="text-sm text-red-600 mt-1">Format should be: BT-2025-0001</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const bookingId = parseInt(match[1]);
+
+            try {
+                const response = await fetch(`${API_URL}/passenger/bookings/${bookingId}`);
+                const data = await response.json();
+                
+                const resultsDiv = document.getElementById('trackingResults');
+                
+                if (data.success) {
+                    const booking = data.data;
+                    const ticketRef = `BT-2025-${String(bookingId).padStart(4, '0')}`;
+                    
+                    resultsDiv.innerHTML = `
+                        <div class="border-2 border-blue-500 rounded-lg overflow-hidden">
+                            <!-- Ticket Header -->
+                            <div class="bg-blue-600 text-white p-4">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm opacity-90">Ticket Reference</p>
+                                        <p class="text-2xl font-bold tracking-wider">${ticketRef}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${
+                                            booking.payment_status === 'paid' ? 'bg-green-500' : 
+                                            booking.payment_status === 'cancelled' ? 'bg-red-500' : 
+                                            'bg-yellow-500'
+                                        }">${booking.payment_status.toUpperCase()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ticket Body -->
+                            <div class="bg-white p-6">
+                                <!-- Route Info -->
+                                <div class="mb-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="text-center flex-1">
+                                            <p class="text-2xl font-bold text-gray-800">${booking.origin}</p>
+                                            <p class="text-xs text-gray-500">FROM</p>
+                                        </div>
+                                        <div class="px-4">
+                                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="text-center flex-1">
+                                            <p class="text-2xl font-bold text-gray-800">${booking.destination}</p>
+                                            <p class="text-xs text-gray-500">TO</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Passenger Details -->
+                                <div class="border-t border-gray-200 pt-4 mb-4">
+                                    <h4 class="font-semibold text-gray-700 mb-3">👤 Passenger Information</h4>
+                                    <div class="grid grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <p class="text-gray-500">Name</p>
+                                            <p class="font-semibold text-gray-800">${booking.passenger_name}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Email</p>
+                                            <p class="font-semibold text-gray-800">${booking.passenger_email}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Phone</p>
+                                            <p class="font-semibold text-gray-800">${booking.passenger_phone}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Seats</p>
+                                            <p class="font-semibold text-gray-800">${booking.seat_count} seat(s)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Trip Details -->
+                                <div class="border-t border-gray-200 pt-4 mb-4">
+                                    <h4 class="font-semibold text-gray-700 mb-3">🚐 Trip Information</h4>
+                                    <div class="grid grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <p class="text-gray-500">Vehicle</p>
+                                            <p class="font-semibold text-gray-800">${booking.vehicle_type} - ${booking.plate_number}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Driver</p>
+                                            <p class="font-semibold text-gray-800">${booking.driver_name}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Departure Time</p>
+                                            <p class="font-semibold text-gray-800">${new Date(booking.estimated_departure_time).toLocaleString()}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Trip Status</p>
+                                            <p class="font-semibold text-gray-800">${booking.trip_status.toUpperCase()}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Details -->
+                                <div class="border-t border-gray-200 pt-4">
+                                    <h4 class="font-semibold text-gray-700 mb-3">💰 Payment Details</h4>
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-sm text-gray-500">Total Amount</p>
+                                            <p class="text-2xl font-bold text-blue-600">₱${booking.total_amount}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm text-gray-500">Booking Date</p>
+                                            <p class="text-sm font-semibold text-gray-800">${new Date(booking.booking_date).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                ${booking.payment_status === 'paid' && booking.trip_status === 'boarding' ? `
+                                    <button onclick="cancelBooking(${bookingId})" class="mt-6 w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700">
+                                        ❌ Cancel Booking
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+                            <p class="text-yellow-800 text-lg mb-2">⚠️ Booking Not Found</p>
+                            <p class="text-sm text-yellow-700">No booking found with reference: <strong>${trackingNumber}</strong></p>
+                            <p class="text-xs text-yellow-600 mt-2">Please check your ticket reference number and try again.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error tracking booking:', error);
+                document.getElementById('trackingResults').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                        <p class="text-red-800">❌ Error tracking booking</p>
+                        <p class="text-sm text-red-600 mt-1">Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Navigation functions
+        function backToStep1() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        }
+
+        function backToStep2() {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        function resetBooking() {
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('bookingForm').reset();
+            selectedRoute = null;
+            selectedTrip = null;
+            loadRoutes();
+        }
+    </script>
+</body>
+</html>
