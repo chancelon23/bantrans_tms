@@ -8,7 +8,6 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
-
 // CORS - Allow all origins for development
 app.use(cors({
   origin: '*', // Allow all origins
@@ -16,6 +15,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +26,7 @@ app.use('/uploads', express.static('uploads'));
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/passenger', require('./routes/passenger.routes'));
+app.use('/api/dispatcher', require('./routes/dispatcher.routes'));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -44,7 +45,8 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/health',
       auth: '/api/auth',
-      passenger: '/api/passenger'
+      passenger: '/api/passenger',
+      dispatcher: '/api/dispatcher'
     }
   });
 });
