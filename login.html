@@ -107,7 +107,15 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5001/api';
+        
+    const hostname = window.location.hostname;
+    const API_URL = `http://${hostname}:5001/api`;
+    
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+const API_URL = getApiUrl();
+console.log('API URL:', API_URL); // Debug log
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();

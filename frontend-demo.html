@@ -193,9 +193,21 @@
     </div>
 
     <script>
-        // API Base URL
-        const API_URL = 'http://localhost:5001/api';
-        
+        // Auto-detect API URL based on current host
+const getApiUrl = () => {
+    const hostname = window.location.hostname;
+    
+    // If accessing via localhost, use localhost
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:5001/api';
+    }
+    
+    // If accessing via IP address or network, use the same IP
+    return `http://${hostname}:5001/api`;
+};
+
+const API_URL = getApiUrl();
+console.log('API URL:', API_URL); // Debug log
         // State
         let selectedRoute = null;
         let selectedTrip = null;

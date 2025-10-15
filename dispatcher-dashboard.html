@@ -351,10 +351,9 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5001/api';
-        let token = '';
-        let user = {};
-
+   const hostname = window.location.hostname;
+    const API_URL = `http://${hostname}:5001/api`;
+    let token = '';
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             checkAuth();
