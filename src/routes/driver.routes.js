@@ -8,11 +8,17 @@ const { authorize } = require('../middleware/role.middleware');
 router.use(protect);
 router.use(authorize('driver'));
 
-// Routes
+// ==================== CURRENT TRIP ====================
 router.get('/trip/current', tripsController.getCurrentTrip);
 router.get('/trip/:id/manifest', tripsController.getTripManifest);
 router.post('/trip/:id/arrive', tripsController.markTripArrived);
+
+// ==================== TRIP MANAGEMENT ====================
+router.get('/trips/upcoming', tripsController.getUpcomingTrips);
 router.get('/trips/history', tripsController.getTripHistory);
+
+// ==================== STATISTICS ====================
 router.get('/stats', tripsController.getDriverStats);
+router.get('/earnings', tripsController.getEarningsSummary);
 
 module.exports = router;

@@ -45,10 +45,13 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Static files (for uploads)
 app.use('/uploads', express.static('uploads'));
 
-// API Routes - these must come after CORS and body parser
+// ==================== API ROUTES ====================
+// IMPORTANT: Add these lines to connect your routes!
 app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/passenger', require('./routes/passenger.routes'));
+app.use('/api/admin', require('./routes/admin.routes'));        // ✅ ADDED
 app.use('/api/dispatcher', require('./routes/dispatcher.routes'));
+app.use('/api/driver', require('./routes/driver.routes'));      // ✅ ADDED
+app.use('/api/passenger', require('./routes/passenger.routes'));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -68,8 +71,10 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/health',
       auth: '/api/auth',
-      passenger: '/api/passenger',
+      admin: '/api/admin',           // ✅ ADDED
       dispatcher: '/api/dispatcher',
+      driver: '/api/driver',         // ✅ ADDED
+      passenger: '/api/passenger',
       login: '/login.html',
       demo: '/frontend-demo.html'
     }
