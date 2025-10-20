@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanTrans - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-blocked {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .report-section {
+            margin-bottom: 30px;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .date-filter input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>⚙️ BanTrans TMS - Admin</h1>
+        <div class="navbar-right">
+            <div class="user-info">
+                <div id="userName"></div>
+                <div style="font-size: 12px; opacity: 0.8;">Administrator</div>
+            </div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="alert-container"></div>
+
+        <!-- Dashboard Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">👥</span>
+                </div>
+                <div class="stat-value" id="totalUsers">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🚗</span>
+                </div>
+                <div class="stat-value" id="totalDrivers">0</div>
+                <div class="stat-label">Active Drivers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🚌</span>
+                </div>
+                <div class="stat-value" id="totalVehicles">0</div>
+                <div class="stat-label">Vehicles</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">💰</span>
+                </div>
+                <div class="stat-value" id="todayRevenue">₱0</div>
+                <div class="stat-label">Today's Revenue</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('users')">Users</button>
+            <button class="tab" onclick="showTab('routes')">Routes</button>
+            <button class="tab" onclick="showTab('vehicles')">Vehicles</button>
+            <button class="tab" onclick="showTab('reports')">Reports</button>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="users" class="tab-content active">
+            <div class="card">
+                <h2>User Management</h2>
+                <div style="overflow-x: auto;">
+                    <table id="users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Routes Tab -->
+        <div id="routes" class="tab-content">
+            <div class="card">
+                <h2>Route Management</h2>
+                <div style="overflow-x: auto;">
+                    <table id="routes-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Distance (km)</th>
+                                <th>Duration (mins)</th>
+                                <th>Fare (₱)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicles Tab -->
+        <div id="vehicles" class="tab-content">
+            <div class="card">
+                <h2>Vehicle Management</h2>
+                <div style="overflow-x: auto;">
+                    <table id="vehicles-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Plate Number</th>
+                                <th>Type</th>
+                                <th>Make/Model</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <div class="card report-section">
+                <h2>Revenue Report</h2>
+                <div class="date-filter">
+                    <input type="date" id="revenueStartDate" value="2025-10-01">
+                    <input type="date" id="revenueEndDate" value="2025-10-31">
+                    <button class="btn btn-primary" onclick="loadRevenueReport()">Generate</button>
+                </div>
+                <div id="revenue-report-container"></div>
+            </div>
+
+            <div class="card report-section">
+                <h2>Trip Statistics</h2>
+                <div class="date-filter">
+                    <input type="date" id="tripStartDate" value="2025-10-01">
+                    <input type="date" id="tripEndDate" value="2025-10-31">
+                    <button class="btn btn-primary" onclick="loadTripStats()">Generate</button>
+                </div>
+                <div id="trip-stats-container"></div>
+            </div>
+
+            <div class="card report-section">
+                <h2>Driver Performance</h2>
+                <div class="date-filter">
+                    <input type="date" id="driverStartDate" value="2025-10-01">
+                    <input type="date" id="driverEndDate" value="2025-10-31">
+                    <button class="btn btn-primary" onclick="loadDriverPerformance()">Generate</button>
+                </div>
+                <div id="driver-performance-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5001/api';
+        let token = localStorage.getItem('token');
+        let user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user || user.role !== 'admin') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('userName').textContent = `${user.firstname} ${user.lastname}`;
+
+        // Initialize
+        loadDashboard();
+        loadUsers();
+        loadRoutes();
+        loadVehicles();
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'users') loadUsers();
+            if (tabName === 'routes') loadRoutes();
+            if (tabName === 'vehicles') loadVehicles();
+        }
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_URL}/admin/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('totalUsers').textContent = data.data.users.total || 0;
+                    document.getElementById('totalDrivers').textContent = data.data.users.drivers || 0;
+                    document.getElementById('totalVehicles').textContent = data.data.trips.active || 0;
+                    document.getElementById('todayRevenue').textContent = `₱${(data.data.revenue.today || 0).toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Load dashboard error:', error);
+            }
+        }
+
+        async function loadUsers() {
+            const tbody = document.querySelector('#users-table tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading">Loading users...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    tbody.innerHTML = data.data.map(user => `
+                        <tr>
+                            <td>${user.user_id}</td>
+                            <td>${user.firstname} ${user.lastname}</td>
+                            <td>${user.email}</td>
+                            <td><span class="status-badge status-${user.role}">${user.role}</span></td>
+                            <td><span class="status-badge status-${user.status}">${user.status}</span></td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="blockUser(${user.user_id})">
+                                    ${user.status === 'active' ? 'Block' : 'Unblock'}
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Load users error:', error);
+                tbody.innerHTML = '<tr><td colspan="6">Error loading users</td></tr>';
+            }
+        }
+
+        async function loadRoutes() {
+            const tbody = document.querySelector('#routes-table tbody');
+            tbody.innerHTML = '<tr><td colspan="7" class="loading">Loading routes...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_URL}/admin/routes`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    tbody.innerHTML = data.data.map(route => `
+                        <tr>
+                            <td>${route.route_id}</td>
+                            <td>${route.origin}</td>
+                            <td>${route.destination}</td>
+                            <td>${route.distance_km}</td>
+                            <td>${route.estimated_duration_minutes}</td>
+                            <td>₱${route.fare_price}</td>
+                            <td><span class="status-badge status-${route.status}">${route.status}</span></td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Load routes error:', error);
+                tbody.innerHTML = '<tr><td colspan="7">Error loading routes</td></tr>';
+            }
+        }
+
+        async function loadVehicles() {
+            const tbody = document.querySelector('#vehicles-table tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading">Loading vehicles...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_URL}/admin/vehicles`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    tbody.innerHTML = data.data.map(vehicle => `
+                        <tr>
+                            <td>${vehicle.vehicle_id}</td>
+                            <td>${vehicle.plate_number}</td>
+                            <td>${vehicle.vehicle_type}</td>
+                            <td>${vehicle.make} ${vehicle.model}</td>
+                            <td>${vehicle.capacity}</td>
+                            <td><span class="status-badge status-${vehicle.vehicle_status}">${vehicle.vehicle_status}</span></td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Load vehicles error:', error);
+                tbody.innerHTML = '<tr><td colspan="6">Error loading vehicles</td></tr>';
+            }
+        }
+
+        async function loadRevenueReport() {
+            const container = document.getElementById('revenue-report-container');
+            container.innerHTML = '<div class="loading">Generating report...</div>';
+
+            const startDate = document.getElementById('revenueStartDate').value;
+            const endDate = document.getElementById('revenueEndDate').value;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/reports/revenue?start_date=${startDate}&end_date=${endDate}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    const total = data.data.reduce((sum, item) => sum + parseFloat(item.total_revenue), 0);
+                    container.innerHTML = `
+                        <div style="margin-bottom: 15px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+                            <strong>Total Revenue:</strong> ₱${total.toFixed(2)}
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Destination</th>
+                                    <th>Bookings</th>
+                                    <th>Seats Sold</th>
+                                    <th>Revenue</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(item => `
+                                    <tr>
+                                        <td>${item.payment_date}</td>
+                                        <td>${item.destination}</td>
+                                        <td>${item.total_bookings}</td>
+                                        <td>${item.total_seats_sold}</td>
+                                        <td>₱${parseFloat(item.total_revenue).toFixed(2)}</td>
+                                        <td>${item.booking_type}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<div>No revenue data for selected period</div>';
+                }
+            } catch (error) {
+                console.error('Load revenue report error:', error);
+                container.innerHTML = '<div class="alert alert-error">Error loading report</div>';
+            }
+        }
+
+        async function loadTripStats() {
+            const container = document.getElementById('trip-stats-container');
+            container.innerHTML = '<div class="loading">Generating statistics...</div>';
+
+            const startDate = document.getElementById('tripStartDate').value;
+            const endDate = document.getElementById('tripEndDate').value;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/reports/trips?start_date=${startDate}&end_date=${endDate}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Destination</th>
+                                    <th>Total Trips</th>
+                                    <th>Total Passengers</th>
+                                    <th>Avg Passengers</th>
+                                    <th>Full Trips</th>
+                                    <th>Occupancy Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(item => `
+                                    <tr>
+                                        <td>${item.destination}</td>
+                                        <td>${item.total_trips}</td>
+                                        <td>${item.total_passengers}</td>
+                                        <td>${parseFloat(item.avg_passengers_per_trip).toFixed(1)}</td>
+                                        <td>${item.full_trips}</td>
+                                        <td>${item.occupancy_rate}%</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<div>No trip data for selected period</div>';
+                }
+            } catch (error) {
+                console.error('Load trip stats error:', error);
+                container.innerHTML = '<div class="alert alert-error">Error loading statistics</div>';
+            }
+        }
+
+        async function loadDriverPerformance() {
+            const container = document.getElementById('driver-performance-container');
+            container.innerHTML = '<div class="loading">Generating report...</div>';
+
+            const startDate = document.getElementById('driverStartDate').value;
+            const endDate = document.getElementById('driverEndDate').value;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/reports/drivers?start_date=${startDate}&end_date=${endDate}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Driver</th>
+                                    <th>Trips (Period)</th>
+                                    <th>Passengers</th>
+                                    <th>Avg/Trip</th>
+                                    <th>Lifetime Trips</th>
+                                    <th>Total Distance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(driver => `
+                                    <tr>
+                                        <td>${driver.driver_name}</td>
+                                        <td>${driver.trips_in_period || 0}</td>
+                                        <td>${driver.passengers_transported || 0}</td>
+                                        <td>${driver.avg_passengers_per_trip ? parseFloat(driver.avg_passengers_per_trip).toFixed(1) : '0'}</td>
+                                        <td>${driver.lifetime_trips}</td>
+                                        <td>${driver.lifetime_distance} km</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<div>No driver data for selected period</div>';
+                }
+            } catch (error) {
+                console.error('Load driver performance error:', error);
+                container.innerHTML = '<div class="alert alert-error">Error loading report</div>';
+            }
+        }
+
+        async function blockUser(userId) {
+            if (!confirm('Toggle user status?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users/${userId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'blocked' })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ User status updated', 'success');
+                    loadUsers();
+                } else {
+                    showAlert(`❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Error updating user status', 'error');
+            }
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

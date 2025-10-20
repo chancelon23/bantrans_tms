@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanTrans TMS - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .login-body {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c00;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background: #efe;
+            color: #060;
+            border: 1px solid #cfc;
+        }
+
+        .quick-login {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .quick-login h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .quick-login-btn {
+            padding: 10px 15px;
+            margin: 5px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-login-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .version {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🚌 BanTrans TMS</h1>
+            <p>Transport Management System</p>
+        </div>
+        
+        <div class="login-body">
+            <div id="alert-container"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Enter your password">
+                </div>
+
+                <button type="submit" class="btn" id="loginBtn">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="quick-login">
+                <h3>Quick Test Login</h3>
+                <div style="text-align: center;">
+                    <button class="quick-login-btn" onclick="quickLogin('admin')">Admin</button>
+                    <button class="quick-login-btn" onclick="quickLogin('dispatcher')">Dispatcher</button>
+                    <button class="quick-login-btn" onclick="quickLogin('driver')">Driver</button>
+                    <button class="quick-login-btn" onclick="quickLogin('passenger')">Passenger</button>
+                </div>
+            </div>
+
+            <div class="version">
+                v1.0.0 | Backend: http://localhost:5001
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5001/api';
+
+        // Test accounts
+        const testAccounts = {
+            admin: { email: 'admin@bantrans.com', password: 'password123' },
+            dispatcher: { email: 'dispatcher1@bantrans.com', password: 'password123' },
+            driver: { email: 'driver1@bantrans.com', password: 'password123' },
+            passenger: { email: 'passenger1@gmail.com', password: 'password123' }
+        };
+
+        // Quick login function
+        function quickLogin(role) {
+            const account = testAccounts[role];
+            document.getElementById('email').value = account.email;
+            document.getElementById('password').value = account.password;
+            showAlert(`Filled in ${role} credentials. Click "Sign In" to continue.`, 'success');
+        }
+
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = 'Signing In<span class="loading"></span>';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Save token and user data
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data));
+                    
+                    showAlert('Login successful! Redirecting...', 'success');
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        window.location.href = `${data.data.role}-dashboard.html`;
+                    }, 1000);
+                } else {
+                    showAlert(data.message || 'Login failed', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Sign In';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Connection error. Make sure the backend server is running at http://localhost:5001', 'error');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In';
+            }
+        });
+
+        // Show alert function
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            
+            if (type === 'error') {
+                setTimeout(() => {
+                    alertContainer.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        // Check if already logged in
+        if (localStorage.getItem('token')) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            window.location.href = `${user.role}-dashboard.html`;
+        }
+    </script>
+</body>
+</html>

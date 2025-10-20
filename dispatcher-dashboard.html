@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanTrans - Dispatcher Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .queue-section {
+            margin-bottom: 30px;
+        }
+
+        .route-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .route-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .trip-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .trip-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .queue-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .trip-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            font-size: 13px;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .trip-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-boarding {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-waiting {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-full {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .trip-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🚌 BanTrans TMS - Dispatcher</h1>
+        <div class="navbar-right">
+            <div class="user-info">
+                <div id="userName"></div>
+                <div style="font-size: 12px; opacity: 0.8;">Dispatcher</div>
+            </div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('queue')">Queue Status</button>
+            <button class="tab" onclick="showTab('createTrip')">Create Trip</button>
+            <button class="tab" onclick="showTab('walkIn')">Walk-in Booking</button>
+            <button class="tab" onclick="showTab('resources')">Resources</button>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- Queue Status Tab -->
+        <div id="queue" class="tab-content active">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Queue Status - All Routes</h2>
+                    <button class="btn btn-primary" onclick="loadQueue()">🔄 Refresh</button>
+                </div>
+                <div id="queue-container"></div>
+            </div>
+        </div>
+
+        <!-- Create Trip Tab -->
+        <div id="createTrip" class="tab-content">
+            <div class="card">
+                <h2>Create New Trip</h2>
+                <form id="createTripForm">
+                    <div class="form-group">
+                        <label>Select Route</label>
+                        <select id="tripRoute" required></select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Vehicle</label>
+                            <select id="tripVehicle" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select Driver</label>
+                            <select id="tripDriver" required></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Estimated Departure</label>
+                        <input type="datetime-local" id="tripDeparture" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Trip</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Walk-in Booking Tab -->
+        <div id="walkIn" class="tab-content">
+            <div class="card">
+                <h2>Walk-in Booking</h2>
+                <form id="walkInForm">
+                    <div class="form-group">
+                        <label>Select Trip</label>
+                        <select id="walkInTrip" required></select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" id="walkInFirstname" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" id="walkInLastname" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="walkInEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="walkInPhone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="walkInAddress" rows="2" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Number of Seats</label>
+                            <input type="number" id="walkInSeats" min="1" max="10" value="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select id="walkInPayment" required>
+                                <option value="cash">Cash</option>
+                                <option value="gcash">GCash</option>
+                                <option value="paymaya">PayMaya</option>
+                                <option value="terminal">Terminal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Payment Reference</label>
+                        <input type="text" id="walkInPaymentRef" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Create Booking</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Resources Tab -->
+        <div id="resources" class="tab-content">
+            <div class="card">
+                <h2>Available Resources</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div>
+                        <h3 style="margin-bottom: 15px;">Drivers</h3>
+                        <div id="drivers-list"></div>
+                    </div>
+                    <div>
+                        <h3 style="margin-bottom: 15px;">Vehicles</h3>
+                        <div id="vehicles-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manifest Modal -->
+    <div id="manifestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Passenger Manifest</h2>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="manifest-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5001/api';
+        let token = localStorage.getItem('token');
+        let user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user || user.role !== 'dispatcher') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('userName').textContent = `${user.firstname} ${user.lastname}`;
+
+        // Initialize
+        loadQueue();
+        loadResources();
+        loadFormData();
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'queue') loadQueue();
+            if (tabName === 'createTrip') loadFormData();
+            if (tabName === 'walkIn') loadBoardingTrips();
+            if (tabName === 'resources') loadResources();
+        }
+
+        async function loadQueue() {
+            const container = document.getElementById('queue-container');
+            container.innerHTML = '<div class="loading">Loading queue...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/queue`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = data.data.map(route => `
+                        <div class="queue-section">
+                            <div class="route-header">
+                                <div class="route-title">${route.origin} → ${route.destination}</div>
+                                <div>${route.trips.length} trips in queue</div>
+                            </div>
+                            ${route.trips.map(trip => `
+                                <div class="trip-card">
+                                    <span class="queue-badge">Queue #${trip.queue_position}</span>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <h3>Trip #${trip.trip_id}</h3>
+                                        <span class="status-badge status-${trip.trip_status}">${trip.trip_status.toUpperCase()}</span>
+                                    </div>
+                                    <div class="trip-info">
+                                        <div class="info-item">
+                                            <div class="info-label">Departure</div>
+                                            <div class="info-value">${new Date(trip.estimated_departure_time).toLocaleString()}</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Seats</div>
+                                            <div class="info-value">${trip.seats_booked}/${trip.capacity}</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Vehicle</div>
+                                            <div class="info-value">${trip.vehicle_type} (${trip.plate_number})</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Driver</div>
+                                            <div class="info-value">${trip.driver_name}</div>
+                                        </div>
+                                    </div>
+                                    <div class="trip-actions">
+                                        <button class="btn btn-primary" onclick="viewManifest(${trip.trip_id})">📋 Manifest</button>
+                                        ${trip.queue_position === 1 && trip.seats_booked > 0 ? 
+                                            `<button class="btn btn-success" onclick="markDeparted(${trip.trip_id})">🚀 Mark Departed</button>` : 
+                                            ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="empty-state"><h3>No trips in queue</h3></div>';
+                }
+            } catch (error) {
+                console.error('Load queue error:', error);
+                container.innerHTML = '<div class="alert alert-error">Error loading queue</div>';
+            }
+        }
+
+        async function loadFormData() {
+            try {
+                const [routes, vehicles, drivers] = await Promise.all([
+                    fetch(`${API_URL}/passenger/routes`).then(r => r.json()),
+                    fetch(`${API_URL}/dispatcher/resources/vehicles`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }).then(r => r.json()),
+                    fetch(`${API_URL}/dispatcher/resources/drivers`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }).then(r => r.json())
+                ]);
+
+                if (routes.success) {
+                    const routeSelect = document.getElementById('tripRoute');
+                    routeSelect.innerHTML = '<option value="">Select route...</option>' +
+                        routes.data.map(r => `<option value="${r.route_id}">${r.origin} → ${r.destination}</option>`).join('');
+                }
+
+                if (vehicles.success) {
+                    const vehicleSelect = document.getElementById('tripVehicle');
+                    vehicleSelect.innerHTML = '<option value="">Select vehicle...</option>' +
+                        vehicles.data.filter(v => v.vehicle_status === 'available').map(v => 
+                            `<option value="${v.vehicle_id}">${v.vehicle_type} - ${v.plate_number} (${v.capacity} seats)</option>`
+                        ).join('');
+                }
+
+                if (drivers.success) {
+                    const driverSelect = document.getElementById('tripDriver');
+                    driverSelect.innerHTML = '<option value="">Select driver...</option>' +
+                        drivers.data.filter(d => d.driver_status === 'available').map(d => 
+                            `<option value="${d.user_id}">${d.driver_name}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Load form data error:', error);
+            }
+        }
+
+        document.getElementById('createTripForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const tripData = {
+                route_id: parseInt(document.getElementById('tripRoute').value),
+                vehicle_id: parseInt(document.getElementById('tripVehicle').value),
+                driver_id: parseInt(document.getElementById('tripDriver').value),
+                estimated_departure: document.getElementById('tripDeparture').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/trips`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(tripData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ Trip created successfully!', 'success');
+                    document.getElementById('createTripForm').reset();
+                    showTab('queue');
+                } else {
+                    showAlert(`❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Error creating trip', 'error');
+            }
+        });
+
+        async function loadBoardingTrips() {
+            try {
+                const response = await fetch(`${API_URL}/passenger/trips/available`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const select = document.getElementById('walkInTrip');
+                    select.innerHTML = '<option value="">Select trip...</option>' +
+                        data.data.map(t => 
+                            `<option value="${t.trip_id}">${t.origin} → ${t.destination} (${t.seats_available} seats available)</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Load trips error:', error);
+            }
+        }
+
+        document.getElementById('walkInForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const bookingData = {
+                trip_id: parseInt(document.getElementById('walkInTrip').value),
+                firstname: document.getElementById('walkInFirstname').value,
+                lastname: document.getElementById('walkInLastname').value,
+                email: document.getElementById('walkInEmail').value,
+                phone: document.getElementById('walkInPhone').value,
+                address: document.getElementById('walkInAddress').value,
+                seat_count: parseInt(document.getElementById('walkInSeats').value),
+                payment_method: document.getElementById('walkInPayment').value,
+                payment_reference: document.getElementById('walkInPaymentRef').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/bookings/walk-in`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(`✅ Booking created! Ticket: ${data.data.ticket_reference}`, 'success');
+                    document.getElementById('walkInForm').reset();
+                } else {
+                    showAlert(`❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Error creating booking', 'error');
+            }
+        });
+
+        async function viewManifest(tripId) {
+            const modal = document.getElementById('manifestModal');
+            const content = document.getElementById('manifest-content');
+            
+            modal.classList.add('active');
+            content.innerHTML = '<div class="loading">Loading manifest...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/trips/${tripId}/manifest`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const manifest = data.data;
+                    content.innerHTML = `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                            <h3>Trip #${manifest.trip_info.trip_id}</h3>
+                            <p><strong>Route:</strong> ${manifest.trip_info.origin} → ${manifest.trip_info.destination}</p>
+                            <p><strong>Departure:</strong> ${new Date(manifest.trip_info.estimated_departure_time).toLocaleString()}</p>
+                            <p><strong>Passengers:</strong> ${manifest.total_passengers}/${manifest.trip_info.capacity}</p>
+                        </div>
+                        <h3>Passengers (${manifest.total_bookings} bookings)</h3>
+                        ${manifest.passengers.map(p => `
+                            <div style="border: 1px solid #e0e0e0; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                                <div><strong>${p.passenger_name}</strong> (${p.seat_count} seat${p.seat_count > 1 ? 's' : ''})</div>
+                                <div style="font-size: 13px; color: #666; margin-top: 5px;">
+                                    <div>📧 ${p.passenger_email}</div>
+                                    <div>📱 ${p.passenger_phone}</div>
+                                    <div>🎫 ${p.ticket_reference}</div>
+                                    <div>💳 ₱${p.total_amount} (${p.booking_type})</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    `;
+                }
+            } catch (error) {
+                content.innerHTML = '<div class="alert alert-error">Error loading manifest</div>';
+            }
+        }
+
+        async function markDeparted(tripId) {
+            if (!confirm('Mark this trip as departed? This will advance the queue.')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/trips/${tripId}/depart`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ Trip marked as departed! Queue advanced.', 'success');
+                    loadQueue();
+                } else {
+                    showAlert(`❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Error marking trip departed', 'error');
+            }
+        }
+
+        async function loadResources() {
+            try {
+                const [drivers, vehicles] = await Promise.all([
+                    fetch(`${API_URL}/dispatcher/resources/drivers`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }).then(r => r.json()),
+                    fetch(`${API_URL}/dispatcher/resources/vehicles`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }).then(r => r.json())
+                ]);
+
+                if (drivers.success) {
+                    document.getElementById('drivers-list').innerHTML = drivers.data.map(d => `
+                        <div style="padding: 10px; border: 1px solid #e0e0e0; margin-bottom: 10px; border-radius: 6px;">
+                            <strong>${d.driver_name}</strong>
+                            <div style="font-size: 12px; color: #666;">
+                                <div>Status: <span class="status-badge status-${d.driver_status}">${d.driver_status}</span></div>
+                                <div>Trips: ${d.trips_completed}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                if (vehicles.success) {
+                    document.getElementById('vehicles-list').innerHTML = vehicles.data.map(v => `
+                        <div style="padding: 10px; border: 1px solid #e0e0e0; margin-bottom: 10px; border-radius: 6px;">
+                            <strong>${v.plate_number}</strong>
+                            <div style="font-size: 12px; color: #666;">
+                                <div>${v.vehicle_type} (${v.capacity} seats)</div>
+                                <div>Status: <span class="status-badge status-${v.vehicle_status}">${v.vehicle_status}</span></div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Load resources error:', error);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('manifestModal').classList.remove('active');
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
