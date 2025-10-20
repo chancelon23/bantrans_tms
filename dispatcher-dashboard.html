@@ -104,7 +104,6 @@
         .card h2 {
             margin-bottom: 20px;
             color: #333;
-            font-size: 20px;
         }
 
         .queue-section {
@@ -192,6 +191,11 @@
             transition: all 0.2s;
         }
 
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -209,6 +213,11 @@
 
         .btn-danger {
             background: #f44336;
+            color: white;
+        }
+
+        .btn-info {
+            background: #2196F3;
             color: white;
         }
 
@@ -270,6 +279,12 @@
             border: 1px solid #ffcdd2;
         }
 
+        .alert-info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #bbdefb;
+        }
+
         .status-badge {
             padding: 6px 12px;
             border-radius: 20px;
@@ -288,6 +303,21 @@
         }
 
         .status-full {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-departed {
+            background: #e1f5fe;
+            color: #01579b;
+        }
+
+        .status-paid {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-cancelled {
             background: #ffebee;
             color: #c62828;
         }
@@ -344,6 +374,88 @@
             color: #999;
         }
 
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-type-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .search-type-tab {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .search-type-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -351,6 +463,10 @@
             
             .trip-info {
                 grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                overflow-x: auto;
             }
         }
     </style>
@@ -372,6 +488,10 @@
             <button class="tab active" onclick="showTab('queue')">Queue Status</button>
             <button class="tab" onclick="showTab('createTrip')">Create Trip</button>
             <button class="tab" onclick="showTab('walkIn')">Walk-in Booking</button>
+            <button class="tab" onclick="showTab('search')">Search Bookings</button>
+            <button class="tab" onclick="showTab('activeBookings')">Active Bookings</button>
+            <button class="tab" onclick="showTab('monitoring')">Monitoring</button>
+            <button class="tab" onclick="showTab('cancellations')">Cancellations</button>
             <button class="tab" onclick="showTab('resources')">Resources</button>
         </div>
 
@@ -486,6 +606,80 @@
             </div>
         </div>
 
+        <!-- Search Bookings Tab -->
+        <div id="search" class="tab-content">
+            <div class="card">
+                <h2>Search Bookings</h2>
+                
+                <div class="search-type-tabs">
+                    <button class="search-type-tab active" onclick="setSearchType('name')">By Name</button>
+                    <button class="search-type-tab" onclick="setSearchType('email')">By Email</button>
+                    <button class="search-type-tab" onclick="setSearchType('ticket')">By Ticket</button>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Enter search term...">
+                    <button class="btn btn-primary" onclick="searchBookings()">🔍 Search</button>
+                </div>
+
+                <div id="search-results"></div>
+            </div>
+        </div>
+
+        <!-- Active Bookings Tab -->
+        <div id="activeBookings" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Active Bookings</h2>
+                    <button class="btn btn-primary" onclick="loadActiveBookings()">🔄 Refresh</button>
+                </div>
+                <div id="active-bookings-container"></div>
+            </div>
+        </div>
+
+        <!-- Monitoring Tab -->
+        <div id="monitoring" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Real-Time Monitoring</h2>
+                    <button class="btn btn-primary" onclick="refreshMonitoring()">🔄 Refresh All</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="liveQueueCount">0</div>
+                        <div class="stat-label">Trips in Queue</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="liveSeatsAvailable">0</div>
+                        <div class="stat-label">Available Seats</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="liveRecentBookings">0</div>
+                        <div class="stat-label">Recent Bookings (20min)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="liveActiveDrivers">0</div>
+                        <div class="stat-label">Active Drivers</div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0 10px 0;">Recent Bookings</h3>
+                <div id="monitoring-bookings"></div>
+            </div>
+        </div>
+
+        <!-- Cancellations Tab -->
+        <div id="cancellations" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Cancellation History</h2>
+                    <button class="btn btn-primary" onclick="loadCancellations()">🔄 Refresh</button>
+                </div>
+                <div id="cancellations-container"></div>
+            </div>
+        </div>
+
         <!-- Resources Tab -->
         <div id="resources" class="tab-content">
             <div class="card">
@@ -509,9 +703,71 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Passenger Manifest</h2>
-                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <span class="modal-close" onclick="closeModal('manifestModal')">&times;</span>
             </div>
             <div id="manifest-content"></div>
+        </div>
+    </div>
+
+    <!-- Reassign Vehicle Modal -->
+    <div id="reassignVehicleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Reassign Vehicle</h2>
+                <span class="modal-close" onclick="closeModal('reassignVehicleModal')">&times;</span>
+            </div>
+            <form id="reassignVehicleForm">
+                <input type="hidden" id="reassignTripId">
+                <div class="form-group">
+                    <label>Select New Vehicle</label>
+                    <select id="reassignVehicleSelect" required></select>
+                </div>
+                <button type="submit" class="btn btn-primary">Reassign Vehicle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reassign Driver Modal -->
+    <div id="reassignDriverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Reassign Driver</h2>
+                <span class="modal-close" onclick="closeModal('reassignDriverModal')">&times;</span>
+            </div>
+            <form id="reassignDriverForm">
+                <input type="hidden" id="reassignDriverTripId">
+                <div class="form-group">
+                    <label>Select New Driver</label>
+                    <select id="reassignDriverSelect" required></select>
+                </div>
+                <button type="submit" class="btn btn-primary">Reassign Driver</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cancel Booking Modal -->
+    <div id="cancelBookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cancel Booking</h2>
+                <span class="modal-close" onclick="closeModal('cancelBookingModal')">&times;</span>
+            </div>
+            <div id="cancel-booking-info"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-danger" onclick="confirmCancelBooking()">Confirm Cancel</button>
+                <button class="btn" style="background: #ccc;" onclick="closeModal('cancelBookingModal')">Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Contact Information</h2>
+                <span class="modal-close" onclick="closeModal('contactModal')">&times;</span>
+            </div>
+            <div id="contact-info"></div>
         </div>
     </div>
 
@@ -519,8 +775,10 @@
         const API_URL = 'http://localhost:5001/api';
         let token = localStorage.getItem('token');
         let user = JSON.parse(localStorage.getItem('user'));
+        let currentSearchType = 'name';
+        let currentCancelBookingId = null;
 
-        if (!token || !user || user.role !== 'dispatcher') {
+        if (!token || !user) {
             window.location.href = 'login.html';
         }
 
@@ -530,6 +788,14 @@
         loadQueue();
         loadResources();
         loadFormData();
+
+        // Auto-refresh monitoring every 30 seconds
+        setInterval(() => {
+            const activeTab = document.querySelector('.tab.active').textContent;
+            if (activeTab.includes('Monitoring')) {
+                refreshMonitoring();
+            }
+        }, 30000);
 
         function showTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -541,6 +807,9 @@
             if (tabName === 'queue') loadQueue();
             if (tabName === 'createTrip') loadFormData();
             if (tabName === 'walkIn') loadBoardingTrips();
+            if (tabName === 'activeBookings') loadActiveBookings();
+            if (tabName === 'monitoring') refreshMonitoring();
+            if (tabName === 'cancellations') loadCancellations();
             if (tabName === 'resources') loadResources();
         }
 
@@ -587,9 +856,11 @@
                                         </div>
                                     </div>
                                     <div class="trip-actions">
-                                        <button class="btn btn-primary" onclick="viewManifest(${trip.trip_id})">📋 Manifest</button>
+                                        <button class="btn btn-primary btn-sm" onclick="viewManifest(${trip.trip_id})">📋 Manifest</button>
+                                        <button class="btn btn-warning btn-sm" onclick="openReassignVehicle(${trip.trip_id})">🚗 Reassign Vehicle</button>
+                                        <button class="btn btn-info btn-sm" onclick="openReassignDriver(${trip.trip_id})">👤 Reassign Driver</button>
                                         ${trip.queue_position === 1 && trip.seats_booked > 0 ? 
-                                            `<button class="btn btn-success" onclick="markDeparted(${trip.trip_id})">🚀 Mark Departed</button>` : 
+                                            `<button class="btn btn-success btn-sm" onclick="markDeparted(${trip.trip_id})">🚀 Mark Departed</button>` : 
                                             ''}
                                     </div>
                                 </div>
@@ -629,11 +900,25 @@
                         vehicles.data.filter(v => v.vehicle_status === 'available').map(v => 
                             `<option value="${v.vehicle_id}">${v.vehicle_type} - ${v.plate_number} (${v.capacity} seats)</option>`
                         ).join('');
+                    
+                    // Also populate reassign modal
+                    const reassignSelect = document.getElementById('reassignVehicleSelect');
+                    reassignSelect.innerHTML = '<option value="">Select vehicle...</option>' +
+                        vehicles.data.filter(v => v.vehicle_status === 'available').map(v => 
+                            `<option value="${v.vehicle_id}">${v.vehicle_type} - ${v.plate_number} (${v.capacity} seats)</option>`
+                        ).join('');
                 }
 
                 if (drivers.success) {
                     const driverSelect = document.getElementById('tripDriver');
                     driverSelect.innerHTML = '<option value="">Select driver...</option>' +
+                        drivers.data.filter(d => d.driver_status === 'available').map(d => 
+                            `<option value="${d.user_id}">${d.driver_name}</option>`
+                        ).join('');
+                    
+                    // Also populate reassign modal
+                    const reassignSelect = document.getElementById('reassignDriverSelect');
+                    reassignSelect.innerHTML = '<option value="">Select driver...</option>' +
                         drivers.data.filter(d => d.driver_status === 'available').map(d => 
                             `<option value="${d.user_id}">${d.driver_name}</option>`
                         ).join('');
@@ -732,6 +1017,243 @@
             }
         });
 
+        function setSearchType(type) {
+            currentSearchType = type;
+            document.querySelectorAll('.search-type-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const input = document.getElementById('searchInput');
+            if (type === 'name') input.placeholder = 'Enter passenger name...';
+            if (type === 'email') input.placeholder = 'Enter email address...';
+            if (type === 'ticket') input.placeholder = 'Enter ticket reference...';
+        }
+
+        async function searchBookings() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) {
+                showAlert('Please enter a search term', 'error');
+                return;
+            }
+
+            const container = document.getElementById('search-results');
+            container.innerHTML = '<div class="loading">Searching...</div>';
+
+            try {
+                let endpoint = '';
+                if (currentSearchType === 'name') {
+                    endpoint = `${API_URL}/dispatcher/bookings/search/name/${encodeURIComponent(searchTerm)}`;
+                } else if (currentSearchType === 'email') {
+                    endpoint = `${API_URL}/dispatcher/bookings/search/email/${encodeURIComponent(searchTerm)}`;
+                } else if (currentSearchType === 'ticket') {
+                    endpoint = `${API_URL}/dispatcher/bookings/search/ticket/${encodeURIComponent(searchTerm)}`;
+                }
+
+                const response = await fetch(endpoint, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success && (data.data.length > 0 || data.data.booking_id)) {
+                    const bookings = Array.isArray(data.data) ? data.data : [data.data];
+                    container.innerHTML = `
+                        <div class="alert alert-success">Found ${bookings.length} booking(s)</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ticket</th>
+                                    <th>Passenger</th>
+                                    <th>Trip</th>
+                                    <th>Seats</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${bookings.map(b => `
+                                    <tr>
+                                        <td>${b.ticket_reference}</td>
+                                        <td>${b.passenger_name}<br><small>${b.passenger_phone}</small></td>
+                                        <td>${b.origin} → ${b.destination}<br><small>${new Date(b.estimated_departure_time).toLocaleString()}</small></td>
+                                        <td>${b.seat_count}</td>
+                                        <td><span class="status-badge status-${b.payment_status}">${b.payment_status}</span></td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" onclick="viewBookingDetails(${b.booking_id})">View</button>
+                                            ${b.payment_status === 'paid' ? 
+                                                `<button class="btn btn-danger btn-sm" onclick="openCancelBooking(${b.booking_id})">Cancel</button>` : 
+                                                ''}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<div class="alert alert-info">No bookings found</div>';
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                container.innerHTML = '<div class="alert alert-error">Error searching bookings</div>';
+            }
+        }
+
+        async function loadActiveBookings() {
+            const container = document.getElementById('active-bookings-container');
+            container.innerHTML = '<div class="loading">Loading bookings...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/bookings`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ticket</th>
+                                    <th>Passenger</th>
+                                    <th>Trip</th>
+                                    <th>Seats</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(b => `
+                                    <tr>
+                                        <td>${b.ticket_reference}</td>
+                                        <td>${b.passenger_name}<br><small>${b.passenger_email}</small></td>
+                                        <td>${b.origin} → ${b.destination}<br><small>${new Date(b.estimated_departure_time).toLocaleString()}</small></td>
+                                        <td>${b.seat_count}</td>
+                                        <td>${b.booking_type}</td>
+                                        <td>₱${b.total_amount}</td>
+                                        <td><span class="status-badge status-${b.trip_status}">${b.trip_status}</span></td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" onclick="viewPassengerContact(${b.booking_id})">Contact</button>
+                                            <button class="btn btn-danger btn-sm" onclick="openCancelBooking(${b.booking_id})">Cancel</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<div class="empty-state">No active bookings</div>';
+                }
+            } catch (error) {
+                console.error('Load bookings error:', error);
+                container.innerHTML = '<div class="alert alert-error">Error loading bookings</div>';
+            }
+        }
+
+        async function refreshMonitoring() {
+            try {
+                const [queue, bookings, drivers] = await Promise.all([
+                    fetch(`${API_URL}/dispatcher/monitor/queue`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }).then(r => r.json()),
+                    fetch(`${API_URL}/dispatcher/monitor/bookings`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }).then(r => r.json()),
+                    fetch(`${API_URL}/dispatcher/resources/drivers`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }).then(r => r.json())
+                ]);
+
+                if (queue.success) {
+                    document.getElementById('liveQueueCount').textContent = queue.data.length;
+                    const totalSeats = queue.data.reduce((sum, t) => sum + t.seats_available, 0);
+                    document.getElementById('liveSeatsAvailable').textContent = totalSeats;
+                }
+
+                if (bookings.success) {
+                    document.getElementById('liveRecentBookings').textContent = bookings.data.length;
+                    
+                    const container = document.getElementById('monitoring-bookings');
+                    container.innerHTML = bookings.data.length > 0 ? `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Passenger</th>
+                                    <th>Destination</th>
+                                    <th>Seats</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${bookings.data.map(b => `
+                                    <tr>
+                                        <td>${new Date(b.booking_date).toLocaleTimeString()}</td>
+                                        <td>${b.passenger_name}</td>
+                                        <td>${b.destination}</td>
+                                        <td>${b.seat_count}</td>
+                                        <td>₱${b.total_amount}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<div class="alert alert-info">No recent bookings</div>';
+                }
+
+                if (drivers.success) {
+                    const activeDrivers = drivers.data.filter(d => d.driver_status === 'on_trip').length;
+                    document.getElementById('liveActiveDrivers').textContent = activeDrivers;
+                }
+            } catch (error) {
+                console.error('Refresh monitoring error:', error);
+            }
+        }
+
+        async function loadCancellations() {
+            const container = document.getElementById('cancellations-container');
+            container.innerHTML = '<div class="loading">Loading cancellations...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/bookings/cancellations`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ticket</th>
+                                    <th>Passenger</th>
+                                    <th>Trip</th>
+                                    <th>Seats</th>
+                                    <th>Amount</th>
+                                    <th>Cancelled On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(b => `
+                                    <tr>
+                                        <td>${b.ticket_reference}</td>
+                                        <td>${b.passenger_name}<br><small>${b.passenger_email}</small></td>
+                                        <td>${b.origin} → ${b.destination}<br><small>${new Date(b.estimated_departure_time).toLocaleString()}</small></td>
+                                        <td>${b.seat_count}</td>
+                                        <td>₱${b.total_amount}</td>
+                                        <td>${new Date(b.cancellation_date).toLocaleString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    container.innerHTML = '<div class="empty-state">No cancellations</div>';
+                }
+            } catch (error) {
+                console.error('Load cancellations error:', error);
+                container.innerHTML = '<div class="alert alert-error">Error loading cancellations</div>';
+            }
+        }
+
         async function viewManifest(tripId) {
             const modal = document.getElementById('manifestModal');
             const content = document.getElementById('manifest-content');
@@ -770,6 +1292,156 @@
                 }
             } catch (error) {
                 content.innerHTML = '<div class="alert alert-error">Error loading manifest</div>';
+            }
+        }
+
+        async function openReassignVehicle(tripId) {
+            document.getElementById('reassignTripId').value = tripId;
+            document.getElementById('reassignVehicleModal').classList.add('active');
+        }
+
+        async function openReassignDriver(tripId) {
+            document.getElementById('reassignDriverTripId').value = tripId;
+            document.getElementById('reassignDriverModal').classList.add('active');
+        }
+
+        document.getElementById('reassignVehicleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tripId = document.getElementById('reassignTripId').value;
+            const vehicleId = document.getElementById('reassignVehicleSelect').value;
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/trips/${tripId}/reassign-vehicle`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ vehicle_id: parseInt(vehicleId) })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ Vehicle reassigned successfully!', 'success');
+                    closeModal('reassignVehicleModal');
+                    loadQueue();
+                } else {
+                    showAlert(`❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Error reassigning vehicle', 'error');
+            }
+        });
+
+        document.getElementById('reassignDriverForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tripId = document.getElementById('reassignDriverTripId').value;
+            const driverId = document.getElementById('reassignDriverSelect').value;
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/trips/${tripId}/reassign-driver`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ driver_id: parseInt(driverId) })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ Driver reassigned successfully!', 'success');
+                    closeModal('reassignDriverModal');
+                    loadQueue();
+                } else {
+                    showAlert(`❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Error reassigning driver', 'error');
+            }
+        });
+
+        async function openCancelBooking(bookingId) {
+            currentCancelBookingId = bookingId;
+            const content = document.getElementById('cancel-booking-info');
+            content.innerHTML = '<div class="loading">Loading booking details...</div>';
+            document.getElementById('cancelBookingModal').classList.add('active');
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/bookings/${bookingId}/passenger-contact`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const b = data.data;
+                    content.innerHTML = `
+                        <div class="alert alert-error">
+                            <strong>⚠️ Warning:</strong> This action will cancel the booking and return the seats to inventory.
+                        </div>
+                        <div style="padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <p><strong>Booking ID:</strong> ${b.booking_id}</p>
+                            <p><strong>Passenger:</strong> ${b.passenger_name}</p>
+                            <p><strong>Email:</strong> ${b.passenger_email}</p>
+                            <p><strong>Phone:</strong> ${b.passenger_phone}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                content.innerHTML = '<div class="alert alert-error">Error loading booking</div>';
+            }
+        }
+
+        async function confirmCancelBooking() {
+            if (!currentCancelBookingId) return;
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/bookings/${currentCancelBookingId}/cancel`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ Booking cancelled successfully!', 'success');
+                    closeModal('cancelBookingModal');
+                    loadActiveBookings();
+                    currentCancelBookingId = null;
+                } else {
+                    showAlert(`❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Error cancelling booking', 'error');
+            }
+        }
+
+        async function viewPassengerContact(bookingId) {
+            const content = document.getElementById('contact-info');
+            content.innerHTML = '<div class="loading">Loading...</div>';
+            document.getElementById('contactModal').classList.add('active');
+
+            try {
+                const response = await fetch(`${API_URL}/dispatcher/bookings/${bookingId}/passenger-contact`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const p = data.data;
+                    content.innerHTML = `
+                        <div style="padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <h3>${p.passenger_name}</h3>
+                            <p style="margin-top: 10px;"><strong>📧 Email:</strong><br>${p.passenger_email}</p>
+                            <p style="margin-top: 10px;"><strong>📱 Phone:</strong><br><a href="tel:${p.passenger_phone}">${p.passenger_phone}</a></p>
+                            <p style="margin-top: 10px;"><strong>📍 Address:</strong><br>${p.passenger_address}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                content.innerHTML = '<div class="alert alert-error">Error loading contact</div>';
             }
         }
 
@@ -834,8 +1506,8 @@
             }
         }
 
-        function closeModal() {
-            document.getElementById('manifestModal').classList.remove('active');
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
         }
 
         function showAlert(message, type) {
